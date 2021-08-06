@@ -1,4 +1,4 @@
-name: CI
+name: CI-CD
 
 on:
   push:
@@ -10,11 +10,11 @@ on:
     paths:
     - '**.bicep'
   workflow_dispatch:
-  schedule:
-  - cron: "0 0 * * *" #at the end of every day
+  # schedule:
+  # - cron: "0 0 * * *" # at the end of every day
 
 env:
-  LOCATION: "uksouth" # Region for all Azure resources
+  LOCATION: "uksouth" # region for all azure resources
     
 jobs:
   build:
@@ -34,6 +34,31 @@ jobs:
         ENVIRONMENTNAME: dev
       run: |
         az deployment sub validate \
+          --location '${{ env.LOCATION }}' \
+          --name 'allowedLocationsPolicyDeploy-${{ env.ENVIRONMENTNAME }}' \
+          --parameters main.parameters.dev.json \
+          --template-file main.bicep
+  
+  deployDev:
+    name: Deploy to Dev
+    environment:
+      name: Dev
+    env:
+      ENVIRONMENTNAME: dev
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Azure authentication
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Deploy infrastructure
+      working-directory: deploy
+      run: |
+        az deployment sub create \
           --location '${{ env.LOCATION }}' \
           --name 'allowedLocationsPolicyDeploy-${{ env.ENVIRONMENTNAME }}' \
           --parameters main.parameters.dev.json \
