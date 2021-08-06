@@ -31,7 +31,7 @@ jobs:
     - name: Validate Bicep templates to ensure transpilation, linting, and preflight are successful
       working-directory: deploy
       env:
-        ENVIRONMENTNAME: dev
+        ENVIRONMENTNAME: Dev
       run: |
         az deployment sub validate \
           --location '${{ env.LOCATION }}' \
@@ -44,7 +44,7 @@ jobs:
     environment:
       name: Dev
     env:
-      ENVIRONMENTNAME: dev
+      ENVIRONMENTNAME: Dev
     needs: [build]
     runs-on: ubuntu-latest
     steps:
