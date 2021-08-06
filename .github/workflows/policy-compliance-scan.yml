@@ -1,0 +1,22 @@
+name: Policy-Compliance-Scan
+
+on:
+  schedule:
+    - cron:  '0 7 * * *'  # runs every morning 7am
+
+jobs:
+  assess-policy-compliance:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Check for resource compliance
+      uses: azure/policy-compliance-scan@v0
+      with:
+        scopes: |
+          /subscriptions/54b7b0cf-a59e-4c8b-b51f-3283bf778a15
+        policy-assignments-ignore: |
+          /subscriptions/54b7b0cf-a59e-4c8b-b51f-3283bf778a15/providers/Microsoft.Authorization/policyAssignments/SecurityCenterBuiltIn

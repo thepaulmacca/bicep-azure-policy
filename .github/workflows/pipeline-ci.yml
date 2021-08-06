@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - '**.bicep'
+  pull_request:
+    branches: [ main ]
+    paths:
+    - '**.bicep'
+  workflow_dispatch:
+  schedule:
+  - cron: "0 0 * * *" #at the end of every day
+
+env:
+  LOCATION: "uksouth" # Region for all Azure resources
+    
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Azure authentication
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+              
+    - name: Validate Bicep templates to ensure transpilation, linting, and preflight are successful
+      working-directory: deploy
+      env:
+        ENVIRONMENTNAME: dev
+      run: |
+        az deployment sub validate \
+          --location '${{ env.LOCATION }}' \
+          --name 'allowedLocationsPolicyDeploy-${{ env.ENVIRONMENTNAME }}' \
+          --parameters main.parameters.dev.json \
+          --template-file main.bicep
