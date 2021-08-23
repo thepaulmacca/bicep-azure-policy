@@ -11,7 +11,8 @@
         "listOfAllowedLocations": {
             "value": [
                 "uksouth",
-                "ukwest"
+                "ukwest",
+                "westeurope"
             ]
         }
     }
