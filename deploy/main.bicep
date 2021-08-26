@@ -14,6 +14,7 @@ param assignmentEnforcementMode string = 'Default'
 param listOfAllowedLocations array = [
   'uksouth'
   'ukwest'
+  'westeurope'
 ]
 
 // RESOURCES
